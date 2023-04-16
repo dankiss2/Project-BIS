@@ -1,0 +1,31 @@
+## Synthetic Minority Over-sampling Technique, SMOTE. Requires pre_smote_processed_data.xlsx. from previous Python script.
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
+from sklearn.preprocessing import StandardScaler
+
+# Load the preprocessed dataset
+file_path = "pre_smote_processed_data.xlsx"
+df = pd.read_excel(file_path)
+
+# Define the features and target variable
+X = df.drop('Churned in 2022?', axis=1)
+y = df['Churned in 2022?']
+
+# Split the dataset into train and test sets using stratified sampling
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+# Apply SMOTE to the train dataset
+smote = SMOTE(random_state=42)
+X_train_smote, y_train_smote = smote.fit_resample(X_train, y_train)
+
+# Save the train set with SMOTE applied to an xlsx file
+train_set = pd.concat([X_train_smote, y_train_smote], axis=1)
+train_set.to_excel("BIS_train_smote.xlsx", index=False)
+
+# Save the test set to an xlsx file
+test_set = pd.concat([X_test, y_test], axis=1)
+test_set.to_excel("BIS_test.xlsx", index=False)
+
+print("Lock, Stock, and two smoking hot SMOTE sets completed.")
